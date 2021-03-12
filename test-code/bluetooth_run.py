@@ -1,5 +1,6 @@
 import RPi.GPIO as GPIO
 import bluetooth
+from time import sleep
 
 #setup
 in1 = 24
@@ -17,17 +18,9 @@ GPIO.output(in1,0)
 GPIO.output(in2,0)
 
 #set servo duty cycle
-pwm = GPIO.pwm(servo, 50)
+pwm = GPIO.PWM(servo, 50)
 pwm.start(0)
-neutralAngle = 110
-
-def setAngle(angle):
-    duty = angle/18+2
-    GPIO.output(servo, True)
-    pwm.ChangeDutyCycle(duty)
-    # sleep(1)
-    GPIO.output(servo, False)
-    pwm.ChangeDutyCycle(0)
+neutralAngle = 90
 
 #bluetooth setup
 server_socket = bluetooth.BluetoothSocket(bluetooth.RFCOMM)
@@ -35,7 +28,7 @@ server_socket.bind(('',bluetooth.PORT_ANY))
 server_socket.listen(1)
 
 client_socket, address = server_socket.accept()
-#print("Accepted connection from",  address)
+print("Accepted connection from",  address)
 
 #setup moveset
 def forward():
@@ -50,6 +43,15 @@ def stop():
     GPIO.output(in1,0)
     GPIO.output(in2,0)
 
+def setAngle(angle):
+    duty = angle/18+2
+    GPIO.output(servo, True)
+    pwm.ChangeDutyCycle(duty)
+    sleep(1)
+    GPIO.output(servo, False)
+    pwm.ChangeDutyCycle(0)
+
+setAngle(neutralAngle)
 #loop
 while True:
     data = client_socket.recv(1024)
@@ -59,13 +61,22 @@ while True:
     elif data.decode() == "s":
         backward()
     elif data.decode() == "0":
-        stop()
-    elif data.decode() == "a":
-        neutralAngle +=10
         setAngle(neutralAngle)
+        stop()
+    elif data.decode() == "v":
+        #neutralAngle +=10
+        forward()
+        setAngle(120)
+    elif data.decode() == "z":
+        #neutralAngle -=10
+        forward()
+        setAngle(50) 
+    elif data.decode() == "a":
+        setAngle(140)
+
     elif data.decode() == "d":
-        neutralAngle -=10
-        setAngle(neutralAngle) 
+        setAngle(40) 
+
     elif data.decode() == "n":
         break
 stop()
