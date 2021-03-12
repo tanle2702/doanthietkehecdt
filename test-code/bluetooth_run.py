@@ -4,14 +4,30 @@ import bluetooth
 #setup
 in1 = 24
 in2 = 23
+servo = 2
 
 GPIO.setmode(GPIO.BCM)
 GPIO.setup(in1,GPIO.OUT)
 GPIO.setup(in2,GPIO.OUT)
+GPIO.setup(servo,GPIO.OUT)
+
 
 #stop everything
 GPIO.output(in1,0)
 GPIO.output(in2,0)
+
+#set servo duty cycle
+pwm = GPIO.pwm(servo, 50)
+pwm.start(0)
+neutralAngle = 110
+
+def setAngle(angle):
+    duty = angle/18+2
+    GPIO.output(servo, True)
+    pwm.ChangeDutyCycle(duty)
+    # sleep(1)
+    GPIO.output(servo, False)
+    pwm.ChangeDutyCycle(0)
 
 #bluetooth setup
 server_socket = bluetooth.BluetoothSocket(bluetooth.RFCOMM)
@@ -44,6 +60,12 @@ while True:
         backward()
     elif data.decode() == "0":
         stop()
+    elif data.decode() == "a":
+        neutralAngle +=10
+        setAngle(neutralAngle)
+    elif data.decode() == "d":
+        neutralAngle -=10
+        setAngle(neutralAngle) 
     elif data.decode() == "n":
         break
 stop()
