@@ -13,3 +13,5 @@ GPIO.setup(in2,GPIO.OUT)
 #RUN
 GPIO.output(in1,GPIO.LOW)
 GPIO.output(in2,GPIO.LOW)
+
+GPIO.cleanup()
