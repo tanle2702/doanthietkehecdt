@@ -5,7 +5,7 @@ from time import sleep
 #setup
 in1 = 24
 in2 = 23
-servo = 2
+servo = 17
 
 GPIO.setmode(GPIO.BCM)
 GPIO.setup(in1,GPIO.OUT)
@@ -20,7 +20,10 @@ GPIO.output(in2,0)
 #set servo duty cycle
 pwm = GPIO.PWM(servo, 50)
 pwm.start(0)
-neutralAngle = 90
+neutralAngle = 107
+leftSteer = neutralAngle + 40
+rightSteer = neutralAngle - 40
+
 
 #bluetooth setup
 server_socket = bluetooth.BluetoothSocket(bluetooth.RFCOMM)
@@ -47,7 +50,7 @@ def setAngle(angle):
     duty = angle/18+2
     GPIO.output(servo, True)
     pwm.ChangeDutyCycle(duty)
-    sleep(1)
+    sleep(0.5)
     GPIO.output(servo, False)
     pwm.ChangeDutyCycle(0)
 
@@ -61,21 +64,21 @@ while True:
     elif data.decode() == "s":
         backward()
     elif data.decode() == "0":
-        setAngle(neutralAngle)
         stop()
+        setAngle(neutralAngle)
     elif data.decode() == "v":
         #neutralAngle +=10
         forward()
-        setAngle(120)
+        setAngle(leftSteer)
     elif data.decode() == "z":
         #neutralAngle -=10
         forward()
-        setAngle(50) 
+        setAngle(rightSteer) 
     elif data.decode() == "a":
-        setAngle(140)
+        setAngle(leftSteer)
 
     elif data.decode() == "d":
-        setAngle(40) 
+        setAngle(rightSteer) 
 
     elif data.decode() == "n":
         break

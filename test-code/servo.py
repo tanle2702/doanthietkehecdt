@@ -3,7 +3,7 @@ from time import sleep
 import sys
 
 #setup 
-servo = 3
+servo = 11
 GPIO.setmode(GPIO.BOARD)
 GPIO.setup(servo, GPIO.OUT)
 
