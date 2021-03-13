@@ -1,6 +1,11 @@
 import RPi.GPIO as GPIO
 import bluetooth
 from time import sleep
+from picamera import PiCamera
+NEUTRAL_ANGLE = 107
+LEFT_STEER = NEUTRAL_ANGLE + 25
+RIGHT_STEER = NEUTRAL_ANGLE - 25
+
 
 #setup
 in1 = 24
@@ -20,15 +25,15 @@ GPIO.output(in2,0)
 #set servo duty cycle
 pwm = GPIO.PWM(servo, 50)
 pwm.start(0)
-neutralAngle = 107
-leftSteer = neutralAngle + 40
-rightSteer = neutralAngle - 40
 
+#camera setup
+camera = PiCamera()
 
 #bluetooth setup
 server_socket = bluetooth.BluetoothSocket(bluetooth.RFCOMM)
 server_socket.bind(('',bluetooth.PORT_ANY))
 server_socket.listen(1)
+print('Waiting for connection...')
 
 client_socket, address = server_socket.accept()
 print("Accepted connection from",  address)
@@ -53,33 +58,40 @@ def setAngle(angle):
     sleep(0.5)
     GPIO.output(servo, False)
     pwm.ChangeDutyCycle(0)
+    print("Steering at " + str(angle))
 
-setAngle(neutralAngle)
+
+setAngle(NEUTRAL_ANGLE)
 #loop
 while True:
     data = client_socket.recv(1024)
     print("Received %s" % data.decode())
+    #basic movement forward backward
     if data.decode() == "w":
         forward()
     elif data.decode() == "s":
         backward()
+    #movement with steering
+    elif data.decode() == "v":
+        forward()
+        setAngle(LEFT_STEER)
+    elif data.decode() == "z":
+        forward()
+        setAngle(RIGHT_STEER) 
+    elif data.decode() == "v":
+        backward()
+        setAngle(LEFT_STEER)
+    elif data.decode() == "z":
+        backward()
+        setAngle(RIGHT_STEER) 
+    #steering only
+    elif data.decode() == "a":
+        setAngle(LEFT_STEER)
+    elif data.decode() == "d":
+        setAngle(RIGHT_STEER) 
     elif data.decode() == "0":
         stop()
-        setAngle(neutralAngle)
-    elif data.decode() == "v":
-        #neutralAngle +=10
-        forward()
-        setAngle(leftSteer)
-    elif data.decode() == "z":
-        #neutralAngle -=10
-        forward()
-        setAngle(rightSteer) 
-    elif data.decode() == "a":
-        setAngle(leftSteer)
-
-    elif data.decode() == "d":
-        setAngle(rightSteer) 
-
+        setAngle(NEUTRAL_ANGLE)
     elif data.decode() == "n":
         break
 stop()
