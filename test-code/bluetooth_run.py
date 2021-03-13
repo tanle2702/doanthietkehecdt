@@ -1,21 +1,22 @@
 import RPi.GPIO as GPIO
+from gpiozero import Servo
 import bluetooth
 from time import sleep
 from picamera import PiCamera
-NEUTRAL_ANGLE = 107
-LEFT_STEER = NEUTRAL_ANGLE + 25
-RIGHT_STEER = NEUTRAL_ANGLE - 25
+NEUTRAL_ANGLE = 0
+LEFT_STEER = NEUTRAL_ANGLE + 0.5
+RIGHT_STEER = NEUTRAL_ANGLE - 0.5
 
 
 #setup
 in1 = 24
 in2 = 23
-servo = 17
+servo = Servo(17)
 
 GPIO.setmode(GPIO.BCM)
 GPIO.setup(in1,GPIO.OUT)
 GPIO.setup(in2,GPIO.OUT)
-GPIO.setup(servo,GPIO.OUT)
+#GPIO.setup(servo,GPIO.OUT)
 
 
 #stop everything
@@ -23,8 +24,8 @@ GPIO.output(in1,0)
 GPIO.output(in2,0)
 
 #set servo duty cycle
-pwm = GPIO.PWM(servo, 50)
-pwm.start(0)
+#pwm = GPIO.PWM(servo, 50)
+#pwm.start(0)
 
 #camera setup
 camera = PiCamera()
@@ -52,23 +53,23 @@ def stop():
     GPIO.output(in2,0)
 
 def setAngle(angle):
-    duty = angle/18+2
-    GPIO.output(servo, True)
-    pwm.ChangeDutyCycle(duty)
-    sleep(0.5)
-    GPIO.output(servo, False)
-    pwm.ChangeDutyCycle(0)
+    #duty = angle/18+2
+    #GPIO.output(servo, True)
+    #pwm.ChangeDutyCycle(duty)
+    #sleep(0.1)
+    #GPIO.output(servo, False)
+    #pwm.ChangeDutyCycle(0)
+    servo.value = angle 
     print("Steering at " + str(angle))
 
-
+#camera start recording
+camera.start_recording('bluetooth_run.h264')
 setAngle(NEUTRAL_ANGLE)
+
 #loop
 while True:
     data = client_socket.recv(1024)
     print("Received %s" % data.decode())
-    #camera start recording
-    camera.start_recording('bluetooth_run.h264')
-
     #basic movement forward backward
     if data.decode() == "w":
         forward()
@@ -81,10 +82,10 @@ while True:
     elif data.decode() == "z":
         forward()
         setAngle(RIGHT_STEER) 
-    elif data.decode() == "v":
+    elif data.decode() == "c":
         backward()
         setAngle(LEFT_STEER)
-    elif data.decode() == "z":
+    elif data.decode() == "x":
         backward()
         setAngle(RIGHT_STEER) 
     #steering only
@@ -104,4 +105,4 @@ camera.stop_recording()
 client_socket.close()
 server_socket.close()
 
-GPIO.cleanup()
+#GPIO.cleanup()
