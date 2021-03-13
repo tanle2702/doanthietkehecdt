@@ -66,6 +66,9 @@ setAngle(NEUTRAL_ANGLE)
 while True:
     data = client_socket.recv(1024)
     print("Received %s" % data.decode())
+    #camera start recording
+    camera.start_recording('bluetooth_run.h264')
+
     #basic movement forward backward
     if data.decode() == "w":
         forward()
@@ -94,7 +97,10 @@ while True:
         setAngle(NEUTRAL_ANGLE)
     elif data.decode() == "n":
         break
+
 stop()
+setAngle(NEUTRAL_ANGLE)
+camera.stop_recording()
 client_socket.close()
 server_socket.close()
 
