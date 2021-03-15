@@ -72,6 +72,8 @@ out = cv2.VideoWriter('output.avi',fourcc, 20.0, (640,480))
 
 #loop
 while True:
+    _, frame = cap.read()
+    out.write(frame)
     data = client_socket.recv(1024)
     print("Received %s" % data.decode())
     #basic movement forward backward
