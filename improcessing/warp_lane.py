@@ -11,7 +11,7 @@ def clear():
 def nothing(a):
     pass
 
-def initializeTrackbars(intialTracbarVals,wT=1280, hT=720):
+def initializeTrackbars(intialTracbarVals,wT=640, hT=480):
     cv2.namedWindow("Trackbars")
     cv2.resizeWindow("Trackbars", 360, 240)
     cv2.createTrackbar("Width Top", "Trackbars", intialTracbarVals[0],wT//2, nothing)
@@ -19,7 +19,7 @@ def initializeTrackbars(intialTracbarVals,wT=1280, hT=720):
     cv2.createTrackbar("Width Bottom", "Trackbars", intialTracbarVals[2],wT//2, nothing)
     cv2.createTrackbar("Height Bottom", "Trackbars", intialTracbarVals[3], hT, nothing)
 
-def valTrackbars(wT=1280, hT=720):
+def valTrackbars(wT=640, hT=480):
     widthTop = cv2.getTrackbarPos("Width Top", "Trackbars")
     heightTop = cv2.getTrackbarPos("Height Top", "Trackbars")
     widthBottom = cv2.getTrackbarPos("Width Bottom", "Trackbars")
@@ -43,10 +43,10 @@ def drawPoints(img,points):
         cv2.circle(img,(int(points[x][0]),int(points[x][1])),15,(0,0,255),cv2.FILLED)
     return img
 
-cap = cv2.VideoCapture('bt_run.mp4')
+cap = cv2.VideoCapture('output.avi')
 frameCounter = 0
 
-initializeTrackbars((322,408,63,512))
+initializeTrackbars((211,262,90,328))
 while True:
     frameCounter +=1
     if cap.get(cv2.CAP_PROP_FRAME_COUNT) ==frameCounter:
@@ -54,9 +54,9 @@ while True:
         frameCounter=0
  
     _, img = cap.read()
-    points = valTrackbars(wT=1280,hT=720)
+    points = valTrackbars(wT=640,hT=480)
     imgWithPoints = drawPoints(img.copy(), points)
-    imgWarped = warpImg(img, points, 1280,720)
+    imgWarped = warpImg(img, points, 640,480)
     print(points)
 
 
