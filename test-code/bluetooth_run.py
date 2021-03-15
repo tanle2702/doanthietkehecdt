@@ -2,7 +2,9 @@ import RPi.GPIO as GPIO
 from gpiozero import Servo
 import bluetooth
 from time import sleep
-from picamera import PiCamera
+#from picamera import PiCamera
+import cv2 
+
 NEUTRAL_ANGLE = 0
 LEFT_STEER = NEUTRAL_ANGLE + 0.5
 RIGHT_STEER = NEUTRAL_ANGLE - 0.5
@@ -11,7 +13,8 @@ RIGHT_STEER = NEUTRAL_ANGLE - 0.5
 #setup
 in1 = 24
 in2 = 23
-servo = Servo(17)
+servo = Servo(27)
+
 
 GPIO.setmode(GPIO.BCM)
 GPIO.setup(in1,GPIO.OUT)
@@ -28,7 +31,7 @@ GPIO.output(in2,0)
 #pwm.start(0)
 
 #camera setup
-camera = PiCamera()
+cap = cv2.VideoCapture(0)
 
 #bluetooth setup
 server_socket = bluetooth.BluetoothSocket(bluetooth.RFCOMM)
@@ -63,8 +66,9 @@ def setAngle(angle):
     print("Steering at " + str(angle))
 
 #camera start recording
-camera.start_recording('bluetooth_run.h264')
 setAngle(NEUTRAL_ANGLE)
+fourcc = cv2.VideoWriter_fourcc(*'XVID')
+out = cv2.VideoWriter('output.avi',fourcc, 20.0, (640,480))
 
 #loop
 while True:
@@ -101,7 +105,8 @@ while True:
 
 stop()
 setAngle(NEUTRAL_ANGLE)
-camera.stop_recording()
+cap.release()
+out.release()
 client_socket.close()
 server_socket.close()
 
