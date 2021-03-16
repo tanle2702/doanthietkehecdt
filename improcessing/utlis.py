@@ -9,8 +9,8 @@ def drawPoints(img,points):
 
 def thresholding(img):
     hsv = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
-    lowerWhite = np.array([0,0,162])
-    upperWhite = np.array([149, 255,255])
+    lowerWhite = np.array([0,0,148])
+    upperWhite = np.array([91,127,251])
     mask = cv2.inRange(hsv,lowerWhite, upperWhite)
     return mask
 

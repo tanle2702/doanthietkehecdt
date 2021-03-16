@@ -2,9 +2,9 @@ import cv2
 from os import system, name
 import numpy as np
  
-frameWidth = 1280
-frameHeight = 720
-cap = cv2.VideoCapture(1)
+cap = cv2.VideoCapture('output.avi')
+frameWidth = 640 
+frameHeight = 480
 cap.set(3, frameWidth)
 cap.set(4, frameHeight)
  
@@ -21,14 +21,13 @@ def clear():
  
 cv2.namedWindow("HSV")
 cv2.resizeWindow("HSV", 640, 240)
-cv2.createTrackbar("HUE Min", "HSV", 0, 179, empty)
-cv2.createTrackbar("HUE Max", "HSV", 179, 179, empty)
+cv2.createTrackbar("HUE Min", "HSV", 0, 255, empty)
+cv2.createTrackbar("HUE Max", "HSV", 179, 255, empty)
 cv2.createTrackbar("SAT Min", "HSV", 0, 255, empty)
 cv2.createTrackbar("SAT Max", "HSV", 255, 255, empty)
 cv2.createTrackbar("VALUE Min", "HSV", 0, 255, empty)
 cv2.createTrackbar("VALUE Max", "HSV", 255, 255, empty)
  
-cap = cv2.VideoCapture('bt_run.mp4')
 frameCounter = 0
  
 while True:
