@@ -7,7 +7,7 @@ from gpiozero import CPUTemperature
 
 #motor setup
 
-motor = Motor(24,23,17)
+motor = Motor(24,23,27)
 
 def main():
     img = CameraModule.getImg()
@@ -16,5 +16,7 @@ def main():
     motor.steer(curveVal)
 
 if __name__ == '__main__':
-    motor.move()
-    main()
+    while True:
+        motor.move()
+        main()
+
