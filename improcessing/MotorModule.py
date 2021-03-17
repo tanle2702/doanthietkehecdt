@@ -3,7 +3,7 @@ from gpiozero import Servo
 from time import sleep
 
 class Motor():
-    def __init__(in1, in2, servo):
+    def __init__(self, in1, in2, servo):
         self.in1 = in1
         self.in2 = in2
         self.servo = Servo(servo)
@@ -12,15 +12,15 @@ class Motor():
         GPIO.setup(self.in1, GPIO.OUT)
         GPIO.setup(self.in2, GPIO.OUT)
 
-    def move():
+    def move(self):
         GPIO.output(self.in1, True)
         GPIO.output(self.in2, False)
 
-    def stop():
+    def stop(self):
         GPIO.output(self.in1, False)
         GPIO.output(self.in2, False)
 
-    def steer(angle):
+    def steer(self, angle):
         servo.value = angle
 
 def main():
