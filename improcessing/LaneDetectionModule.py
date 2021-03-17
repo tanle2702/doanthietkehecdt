@@ -5,7 +5,7 @@ from BatteryModule import INA219
 from gpiozero import CPUTemperature
 
 curveList = []
-avgCurveN = 5
+avgCurveN = 2
 cpu = CPUTemperature()
 ina219 = INA219(addr=0x42)
 
@@ -28,7 +28,7 @@ def getLaneCurve(img, display=2): # 0 for not display, 1 for the result, 2 for t
 
     #STEP 3 LANE DETECTION
     curveAveragePoint, _ = getHistogram(warped.copy(), display=True, noise_gate=0.9,region=1)
-    midPoint, imgHistogram = getHistogram(warped.copy(), display=True,region=4)
+    midPoint, imgHistogram = getHistogram(warped.copy(), display=True,region=3)
     curveRaw = curveAveragePoint - midPoint
 
     #STEP 4 AVERAGING
@@ -39,8 +39,8 @@ def getLaneCurve(img, display=2): # 0 for not display, 1 for the result, 2 for t
 
     # NORMALIZATION
     curve_norm = curve/100
-    if curve_norm > 1: curve_norm=1
-    if curve_norm < -1: curve_norm=-1
+    #if curve_norm > 1: curve_norm=1
+    #if curve_norm < -1: curve_norm=-1
 
 
     #STEP 5 DISPLAYING RESULT
@@ -77,7 +77,7 @@ def getLaneCurve(img, display=2): # 0 for not display, 1 for the result, 2 for t
     return curve_norm
 
 if __name__ == '__main__':
-    cap = cv2.VideoCapture('output.avi')
+    cap = cv2.VideoCapture(0)
     framecounter = 0
     while True:
         framecounter +=1
