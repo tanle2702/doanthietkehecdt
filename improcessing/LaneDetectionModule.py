@@ -1,21 +1,20 @@
 import cv2
 import numpy as np
-from imutils import perspective
 from utlis import *
-# import BatteryModule
-# from gpiozero import CPUTemperature
+from BatteryModule import INA219
+from gpiozero import CPUTemperature
 
 curveList = []
-avgCurveN = 10
-# cpu = CPUTemperature()
-# ina219 = INA219(addr=0x42)
+avgCurveN = 5
+cpu = CPUTemperature()
+ina219 = INA219(addr=0x42)
 
 def getLaneCurve(img, display=2): # 0 for not display, 1 for the result, 2 for the complete pipeline
     #battery percentage
-    #bus_voltage = ina219.getBusVoltage_V()
-    #p = (bus_voltage-6)/2.4*100
-    # if p>100: p = 100
-    # if p<0: p = 0
+    bus_voltage = ina219.getBusVoltage_V()
+    p = (bus_voltage-6)/2.4*100
+    if p>100: p = 100
+    if p<0: p = 0
 
     imgCopy = img.copy()
     imgResult = img.copy()
@@ -24,7 +23,7 @@ def getLaneCurve(img, display=2): # 0 for not display, 1 for the result, 2 for t
 
     #STEP 2 WARPING
     hT, wT, c = img.shape
-    pts = getPoints(207,262,100,328, wT, hT)
+    pts = getPoints(199,264,100,322, wT, hT)
     warped = warpImg(thresh,pts,wT,hT) 
 
     #STEP 3 LANE DETECTION
@@ -55,8 +54,8 @@ def getLaneCurve(img, display=2): # 0 for not display, 1 for the result, 2 for t
         imgResult = cv2.addWeighted(imgResult,1,imgLaneColor,1,0)
         midY = 450
         cv2.putText(imgResult,"Curve: " + str(curve_norm),(30,30),cv2.FONT_HERSHEY_COMPLEX,1,(255,0,255),3)
-        # cv2.putText(imgResult,"Temp: " + str(cpu.temperature),(30,50),cv2.FONT_HERSHEY_COMPLEX,1,(255,0,255),3)
-        # cv2.putText(imgResult,"Battery percentage: " + str(p) + "%" ,(30,70),cv2.FONT_HERSHEY_COMPLEX,1,(255,0,255),3)
+        cv2.putText(imgResult,"Temp: " + str(cpu.temperature),(30,50),cv2.FONT_HERSHEY_COMPLEX,1,(255,0,255),3)
+        cv2.putText(imgResult,"Battery percentage: " + str(p) + "%" ,(30,70),cv2.FONT_HERSHEY_COMPLEX,1,(255,0,255),3)
         cv2.line(imgResult,(wT//2,midY),(wT//2+(curve*3),midY),(255,0,255),5)
         cv2.line(imgResult, ((wT // 2 + (curve * 3)), midY-25), (wT // 2 + (curve * 3), midY+25), (0, 255, 0), 5)
         for x in range(-30, 30):

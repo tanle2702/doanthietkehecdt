@@ -43,10 +43,10 @@ def drawPoints(img,points):
         cv2.circle(img,(int(points[x][0]),int(points[x][1])),15,(0,0,255),cv2.FILLED)
     return img
 
-cap = cv2.VideoCapture('output.avi')
+cap = cv2.VideoCapture(0)
 frameCounter = 0
 
-initializeTrackbars((211,262,90,328))
+initializeTrackbars((168,287,100,322))
 while True:
     frameCounter +=1
     if cap.get(cv2.CAP_PROP_FRAME_COUNT) ==frameCounter:

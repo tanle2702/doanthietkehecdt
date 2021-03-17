@@ -21,7 +21,13 @@ class Motor():
         GPIO.output(self.in2, False)
 
     def steer(self, angle):
-        servo.value = angle
+        if angle > 1: angle = 1
+        if angle < -1: angle = -1
+        if angle > 0.1 or angle < -0.1:
+            self.servo.value = angle
+        else:
+            self.servo.value = 0
+
 
 def main():
     motor.move()
