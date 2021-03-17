@@ -35,6 +35,6 @@ def main():
     motor.steer(0)
 
 if __name__ == '__main__':
-    motor = Motor(24,23,17)
+    motor = Motor(24,23,27)
     main()
     GPIO.cleanup()
