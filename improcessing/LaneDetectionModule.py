@@ -1,20 +1,20 @@
 import cv2
 import numpy as np
 from utlis import *
-from BatteryModule import INA219
-from gpiozero import CPUTemperature
+# from BatteryModule import INA219
+# from gpiozero import CPUTemperature
 
 curveList = []
 avgCurveN = 2
-cpu = CPUTemperature()
-ina219 = INA219(addr=0x42)
+# cpu = CPUTemperature()
+# ina219 = INA219(addr=0x42)
 
 def getLaneCurve(img, display=2): # 0 for not display, 1 for the result, 2 for the complete pipeline
     #battery percentage
-    bus_voltage = ina219.getBusVoltage_V()
-    p = (bus_voltage-6)/2.4*100
-    if p>100: p = 100
-    if p<0: p = 0
+    # bus_voltage = ina219.getBusVoltage_V()
+    # p = (bus_voltage-6)/2.4*100
+    # if p>100: p = 100
+    # if p<0: p = 0
 
     imgCopy = img.copy()
     imgResult = img.copy()
@@ -27,9 +27,13 @@ def getLaneCurve(img, display=2): # 0 for not display, 1 for the result, 2 for t
     warped = warpImg(thresh,pts,wT,hT) 
 
     #STEP 3 LANE DETECTION
+
+    # CHECKING FOR END OF LINE
     curveAveragePoint, _ = getHistogram(warped.copy(), display=True, noise_gate=0.9,region=1)
     midPoint, imgHistogram = getHistogram(warped.copy(), display=True,region=3)
     curveRaw = curveAveragePoint - midPoint
+    if checkEndOfLane(warped, wT, hT) == False:
+        curveRaw = 0
 
     #STEP 4 AVERAGING
     curveList.append(curveRaw)
@@ -43,6 +47,8 @@ def getLaneCurve(img, display=2): # 0 for not display, 1 for the result, 2 for t
     #if curve_norm < -1: curve_norm=-1
 
 
+
+
     #STEP 5 DISPLAYING RESULT
     if display != 0:
         imgInvWarp = warpImg(warped, pts, wT, hT,inv = True)
@@ -54,8 +60,8 @@ def getLaneCurve(img, display=2): # 0 for not display, 1 for the result, 2 for t
         imgResult = cv2.addWeighted(imgResult,1,imgLaneColor,1,0)
         midY = 450
         cv2.putText(imgResult,"Curve: " + str(curve_norm),(30,30),cv2.FONT_HERSHEY_COMPLEX,1,(255,0,255),3)
-        cv2.putText(imgResult,"Temp: " + str(cpu.temperature),(30,50),cv2.FONT_HERSHEY_COMPLEX,1,(255,0,255),3)
-        cv2.putText(imgResult,"Battery percentage: " + str(p) + "%" ,(30,70),cv2.FONT_HERSHEY_COMPLEX,1,(255,0,255),3)
+        # cv2.putText(imgResult,"Temp: " + str(cpu.temperature),(30,50),cv2.FONT_HERSHEY_COMPLEX,1,(255,0,255),3)
+        # cv2.putText(imgResult,"Battery percentage: " + str(p) + "%" ,(30,70),cv2.FONT_HERSHEY_COMPLEX,1,(255,0,255),3)
         cv2.line(imgResult,(wT//2,midY),(wT//2+(curve*3),midY),(255,0,255),5)
         cv2.line(imgResult, ((wT // 2 + (curve * 3)), midY-25), (wT // 2 + (curve * 3), midY+25), (0, 255, 0), 5)
         for x in range(-30, 30):
@@ -77,7 +83,7 @@ def getLaneCurve(img, display=2): # 0 for not display, 1 for the result, 2 for t
     return curve_norm
 
 if __name__ == '__main__':
-    cap = cv2.VideoCapture(0)
+    cap = cv2.VideoCapture('output.avi')
     framecounter = 0
     while True:
         framecounter +=1

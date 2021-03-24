@@ -80,3 +80,11 @@ def stackImages(scale,imgArray):
         hor= np.hstack(imgArray)
         ver = hor
     return ver
+
+def checkEndOfLane(img, wT, hT):
+    whiteImage = np.ones((hT,wT))
+    whiteSum = np.sum(whiteImage)
+    imgSum = np.sum(img)
+    if imgSum >= 0.25*(255*whiteSum): #np.ones only gives array value of 1, but we need [0,255] to compare with our actual image
+        return True #there's lane
+    return False #no lane
