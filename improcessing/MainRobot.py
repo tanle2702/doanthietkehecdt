@@ -17,8 +17,14 @@ def main():
     motor.steer(-sens*curveVal)
 
 if __name__ == '__main__':
+    motor.move()
     while True:
-        motor.move()
+    if checkEndOfLane(warped, wT, hT) == False:
+        curveRaw = 0
+        motor.stop()
+        motor.steer(curveRaw)
+        cv2.waitKey(1)
+    else:
         main()
         cv2.waitKey(1)
 
