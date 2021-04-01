@@ -17,6 +17,7 @@ def resizeImage(img, width): #supply width as an arg, calc height to keep image 
 if __name__ == '__main__':
     display_size = True
     image = cv2.imread('color_conversion.jpg')
+    cv2.imshow('Before', image)
     if display_size:
         print('Before resizing: ' + str(os.path.getsize('color_conversion.jpg')))
     resized = resizeImage(image, 300)
@@ -24,5 +25,5 @@ if __name__ == '__main__':
     if display_size:
         print('After resizing: ' + str(os.path.getsize('resized.jpg')))
     showShape(resized)
-    cv2.imshow('Showing image...', resized)
+    cv2.imshow('After', resized)
     cv2.waitKey(0)
