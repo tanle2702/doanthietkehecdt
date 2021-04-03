@@ -1,6 +1,16 @@
 import cv2
 import numpy as np
 
+userClickPoint = []
+def clickToAddPoint(event, x, y, flags, param):
+    global userClickPoint
+    
+    if event == cv2.EVENT_LBUTTONDOWN:
+        userClickPoint.append((x,y))
+        cv2.circle(blank_image, tuple(userClickPoint[-1]), 10 , (0,0,255), -1)
+        cv2.imshow('Drawing', blank_image)
+
+
 if __name__ == '__main__':
     blank_image = np.ones((600,1200,3)) * 255 #create a blank image
 
@@ -29,6 +39,10 @@ if __name__ == '__main__':
 
     points = np.array([[0,0],[100,250],[300,30],[60,600]],np.int32)
     cv2.polylines(blank_image, [points], True, (0,255,255), thickness=3) #True to make closed polylines, False to make open polylines
+
+    cv2.namedWindow('Drawing')
+    cv2.setMouseCallback('Drawing', clickToAddPoint)
+
 
     cv2.imshow('Drawing', blank_image)
     cv2.waitKey(0)
