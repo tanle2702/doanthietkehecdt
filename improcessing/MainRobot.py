@@ -1,5 +1,6 @@
 import CameraModule
 from LaneDetectionModule import getLaneCurve
+from utlis import checkEndOfLane
 from MotorModule import Motor
 import BatteryModule
 import cv2
@@ -19,12 +20,6 @@ def main():
 if __name__ == '__main__':
     motor.move()
     while True:
-    if checkEndOfLane(warped, wT, hT) == False:
-        curveRaw = 0
-        motor.stop()
-        motor.steer(curveRaw)
-        cv2.waitKey(1)
-    else:
         main()
         cv2.waitKey(1)
 
