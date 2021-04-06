@@ -13,7 +13,7 @@ motor = Motor(24,23,27)
 
 def main():
     img = CameraModule.getImg()
-    curveVal = getLaneCurve(img, display=0) 
+    curveVal = getLaneCurve(img, display=2) 
     sens = 1
     motor.steer(-sens*curveVal)
 
