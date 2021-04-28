@@ -1,7 +1,6 @@
 import imutils
 import cv2
 import numpy as np
-from gpiozero import Servo
 from time import sleep
 import RPi.GPIO as GPIO
 
