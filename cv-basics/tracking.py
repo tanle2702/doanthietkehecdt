@@ -1,8 +1,14 @@
 from imutils.video import VideoStream
 from imutils.video import FPS
+# from gpiozero import Servo
 import imutils
 import time
+import numpy as np
 import cv2
+
+# servo = Servo(27)
+# servo.value = 90
+
 
 # print(cv2.__version__.split('.'))
 OPENCV_OBJECT_TRACKERS = { #pip3 install opencv-contrib-python
@@ -18,7 +24,14 @@ initBB = None
 
 tracker =  OPENCV_OBJECT_TRACKERS['csrt']()
 
-vs = cv2.VideoCapture(3)
+vs = cv2.VideoCapture(4)
+
+_, frame = vs.read()
+height, width, channel = frame.shape
+
+center = int(width/2)
+print('h: {}, w: {}, center: {}'.format(height, width, center))
+
 
 fps = None
 
@@ -27,7 +40,7 @@ while True:
     if frame is None:
        break
 
-    frame = imutils.resize(frame, width=500)
+    # frame = imutils.resize(frame, width=500)
     (H,W) = frame.shape[:2]
     
     if initBB is not None:
@@ -35,15 +48,21 @@ while True:
 
         if success:
             (x,y,w,h) = [int(v) for v in box]
+            cX = int(x+w/2)
+            cY = int(y+h/2)
+            delta = center - cX
+            print('cX: {}, cY: {}, delta: {}'.format(cX,cY, delta))
             cv2.rectangle(frame, (x,y), (x+w, y+h), (0,255,0),3)
+            cv2.circle(frame, (cX, cY), 5, (0,0,255), -1)
 
         fps.update()
         fps.stop()
 
         info = [
-            ('Tracker: ', 'kcf'),
+            ('Tracker: ', 'csrt'),
             ('Success: ', 'Yes' if success else 'No'),
             ('FPS: ', '{:.2f}'.format(fps.fps())),
+            ('Delta: ', '{}'.format(center-cX)),
                 ]
         for (i, (k,v)) in enumerate(info):
             text = '{}: {}'.format(k,v)

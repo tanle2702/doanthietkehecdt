@@ -10,7 +10,7 @@ while True:
     #read 
     _, frame = cap.read()
     frame = cv2.resize(frame,(640,360))
-    frame = cv2.fastNlMeansDenoisingColored(frame,None,10,10,7,21)
+    # frame = cv2.fastNlMeansDenoisingColored(frame,None,10,10,7,21)
 
     #masking
     hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)

@@ -30,6 +30,7 @@ if __name__ == '__main__':
 
     for contour in contours:
         M = cv2.moments(contour)
+        print(contour)
         cX = int((M["m10"] / M["m00"]))
         cY = int((M["m01"] / M["m00"]))
         shape = detectShape(contour)
