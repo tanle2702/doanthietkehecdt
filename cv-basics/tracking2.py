@@ -10,7 +10,6 @@ cap = cv2.VideoCapture(0)
 cap.set(3,480)
 cap.set(4,320)
 
-#servo = Servo(27)
 servo = 27
 GPIO.setmode(GPIO.BCM)
 GPIO.setup(servo, GPIO.OUT)
