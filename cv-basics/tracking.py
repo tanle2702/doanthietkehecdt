@@ -1,15 +1,23 @@
 from imutils.video import VideoStream
 from imutils.video import FPS
-from gpiozero import Servo
 import imutils
 import time
 import numpy as np
 import cv2
 
-servo = Servo(27)
-servo.value = 0
+prev_angle = 90
+angle = 90
+servo = 27
+GPIO.setmode(GPIO.BCM)
+GPIO.setup(servo, GPIO.OUT)
+pwm = GPIO.PWM(servo,50)
+pwm.start(0)
 
-
+def setAngle(angle):
+    duty = angle/18+2
+    GPIO.output(servo, True)
+    pwm.ChangeDutyCycle(duty)
+    sleep(0.15)
 # print(cv2.__version__.split('.'))
 OPENCV_OBJECT_TRACKERS = { #pip3 install opencv-contrib-python
     'csrt': cv2.TrackerCSRT_create,
@@ -26,7 +34,8 @@ tracker =  OPENCV_OBJECT_TRACKERS['csrt']()
 
 vs = cv2.VideoCapture(0)
 
-_, frame = vs.read()
+_, frame = vs.read()p
+frame = frame[100:300, 50:250]
 height, width, channel = frame.shape
 
 center = int(width/2)
@@ -37,10 +46,10 @@ fps = None
 
 while True:
     _, frame = vs.read()
+    frame = frame[100:300, 50:250]
     if frame is None:
        break
 
-    # frame = imutils.resize(frame, width=500)
     (H,W) = frame.shape[:2]
     
     if initBB is not None:
@@ -48,12 +57,28 @@ while True:
 
         if success:
             (x,y,w,h) = [int(v) for v in box]
-            cX = int(x+w/2)
-            cY = int(y+h/2)
+            centerX = int(x+w/2)
+            centerY = int(y+h/2)
             delta = int((center - cX)/100)
-            print('cX: {}, cY: {}, delta: {}'.format(cX,cY, delta))
+            print('cX: {}, cY: {}, delta: {}'.format(centerX,centerY, delta))
             cv2.rectangle(frame, (x,y), (x+w, y+h), (0,255,0),3)
-            cv2.circle(frame, (cX, cY), 5, (0,0,255), -1)
+            cv2.circle(frame, (centerX, centerY), 5, (0,0,255), -1)
+
+            if centerX < center -30:
+                angle += 2
+            elif centerX > center + 30:
+                angle -= 2
+            if angle > 180:
+                angle = 180
+            if angle < 0:
+                angle = 0
+
+            if not prev_angle == angle:
+                setAngle(angle)
+
+            prev_angle = angle
+
+ 
 
         fps.update()
         fps.stop()

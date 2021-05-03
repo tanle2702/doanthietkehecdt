@@ -1,7 +1,6 @@
 import imutils
 import cv2
 import numpy as np
-from gpiozero import Servo
 from time import sleep
 import RPi.GPIO as GPIO
 
@@ -10,7 +9,6 @@ cap = cv2.VideoCapture(0)
 cap.set(3,480)
 cap.set(4,320)
 
-#servo = Servo(27)
 servo = 27
 GPIO.setmode(GPIO.BCM)
 GPIO.setup(servo, GPIO.OUT)
@@ -22,8 +20,6 @@ def setAngle(angle):
     GPIO.output(servo, True)
     pwm.ChangeDutyCycle(duty)
     sleep(0.15)
-    #GPIO.output(servo, False)
-    #pwm.ChangeDutyCycle(0)
 
 _, frame = cap.read()
 
@@ -34,16 +30,11 @@ center = int(width/2)
 prev_angle = 90
 angle = 90
 centerX = int(width/2)
-print('h: {}, w: {}, center: {}'.format(height, width, center))
-
-
 
 while True:
     #read 
     _, frame = cap.read()
     frame = frame[100:300, 50:250]
-    # frame = cv2.resize(frame,(640,360))
-    # frame = cv2.fastNlMeansDenoisingColored(frame,None,10,10,7,21)
 
     #masking
     hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
@@ -64,15 +55,12 @@ while True:
         centerY= int((y+y+h)/2)
         cv2.circle(frame, (centerX, centerY), 3 ,(0,0,255), -1)
         cv2.rectangle(frame, (x,y), (x+w,y+h), (0,255,0) , thickness=4 )
-        #delta = centerX - center
-        #print('delta: {}'.format(delta))
         break
 
     if centerX < center -30:
         angle += 2
     elif centerX > center + 30:
         angle -= 2
-    print(angle)
     if angle > 180:
         angle = 180
     if angle < 0:
