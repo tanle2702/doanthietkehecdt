@@ -12,8 +12,8 @@ servo.value = 0
 
 # print(cv2.__version__.split('.'))
 OPENCV_OBJECT_TRACKERS = { #pip3 install opencv-contrib-python
-    #'csrt': cv2.TrackerCSRT_create,
-    'kcf': cv2.TrackerKCF_create,
+    'csrt': cv2.TrackerCSRT_create,
+    # 'kcf': cv2.TrackerKCF_create,
     # 'boosting': cv2.TrackerBoosting_create,
     # 'mil': cv2.TrackerMIL_create,
     # 'tld': cv2.TrackerTLD_create,
@@ -22,7 +22,7 @@ OPENCV_OBJECT_TRACKERS = { #pip3 install opencv-contrib-python
         }
 initBB = None
 
-tracker =  OPENCV_OBJECT_TRACKERS['kcf']()
+tracker =  OPENCV_OBJECT_TRACKERS['csrt']()
 
 vs = cv2.VideoCapture(0)
 
