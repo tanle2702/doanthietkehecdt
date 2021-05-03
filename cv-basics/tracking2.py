@@ -23,8 +23,8 @@ def setAngle(angle):
 
 _, frame = cap.read()
 
-frame = frame[100:300, 50:250]
 height, width, channel = frame.shape
+#frame = frame[100:300, 50:250]
 
 center = int(width/2)
 prev_angle = 90
@@ -34,13 +34,13 @@ centerX = int(width/2)
 while True:
     #read 
     _, frame = cap.read()
-    frame = frame[100:300, 50:250]
+    #frame = frame[100:300, 50:250]
 
     #masking
     hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
 
-    lower = np.array([34,123,0])
-    upper = np.array([65,255,183])
+    lower = np.array([13,0,76])
+    upper = np.array([23,255,137])
     
     mask = cv2.inRange(hsv, lower, upper)
 
@@ -53,6 +53,8 @@ while True:
         (x,y,w,h) = cv2.boundingRect(contour)
         centerX = int((x+x+w)/2)
         centerY= int((y+y+h)/2)
+        delta = centerX - center
+        print(delta)
         cv2.circle(frame, (centerX, centerY), 3 ,(0,0,255), -1)
         cv2.rectangle(frame, (x,y), (x+w,y+h), (0,255,0) , thickness=4 )
         break

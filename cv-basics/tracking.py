@@ -2,8 +2,10 @@ from imutils.video import VideoStream
 from imutils.video import FPS
 import imutils
 import time
+from time import sleep
 import numpy as np
 import cv2
+import RPi.GPIO as GPIO
 
 prev_angle = 90
 angle = 90
@@ -34,8 +36,8 @@ tracker =  OPENCV_OBJECT_TRACKERS['csrt']()
 
 vs = cv2.VideoCapture(0)
 
-_, frame = vs.read()p
-frame = frame[100:300, 50:250]
+_, frame = vs.read()
+#frame = frame[100:300, 50:250]
 height, width, channel = frame.shape
 
 center = int(width/2)
@@ -46,7 +48,7 @@ fps = None
 
 while True:
     _, frame = vs.read()
-    frame = frame[100:300, 50:250]
+    #frame = frame[100:300, 50:250]
     if frame is None:
        break
 
@@ -59,7 +61,7 @@ while True:
             (x,y,w,h) = [int(v) for v in box]
             centerX = int(x+w/2)
             centerY = int(y+h/2)
-            delta = int((center - cX)/100)
+            delta = int(center - centerX)
             print('cX: {}, cY: {}, delta: {}'.format(centerX,centerY, delta))
             cv2.rectangle(frame, (x,y), (x+w, y+h), (0,255,0),3)
             cv2.circle(frame, (centerX, centerY), 5, (0,0,255), -1)
@@ -87,18 +89,12 @@ while True:
             ('Tracker: ', 'csrt'),
             ('Success: ', 'Yes' if success else 'No'),
             ('FPS: ', '{:.2f}'.format(fps.fps())),
-            ('Delta: ', '{}'.format(center-cX)),
+            ('Delta: ', '{}'.format(center-centerX)),
                 ]
         for (i, (k,v)) in enumerate(info):
             text = '{}: {}'.format(k,v)
             cv2.putText(frame, text, (10, H-((i*20)+20)), cv2.FONT_HERSHEY_SIMPLEX, 0.6, (0,0,255), 2)
         
-        if delta > 1:
-            delta = 1
-        if delta < -1:
-            delta = -1
-
-        servo.value = delta  
        
     cv2.imshow('Frame', frame)
     key = cv2.waitKey(1) & 0xFF
