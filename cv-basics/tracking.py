@@ -23,9 +23,9 @@ def setAngle(angle):
 # print(cv2.__version__.split('.'))
 OPENCV_OBJECT_TRACKERS = { #pip3 install opencv-contrib-python
     'csrt': cv2.TrackerCSRT_create,
-    # 'kcf': cv2.TrackerKCF_create,
+    'kcf': cv2.TrackerKCF_create,
     # 'boosting': cv2.TrackerBoosting_create,
-    # 'mil': cv2.TrackerMIL_create,
+    'mil': cv2.TrackerMIL_create,
     # 'tld': cv2.TrackerTLD_create,
     # 'medianflow': cv2.TrackerMedianFlow_create,
     # 'mosse': cv2.TrackerMOSSE_create
@@ -66,10 +66,10 @@ while True:
             cv2.rectangle(frame, (x,y), (x+w, y+h), (0,255,0),3)
             cv2.circle(frame, (centerX, centerY), 5, (0,0,255), -1)
 
-            if centerX < center -30:
-                angle += 2
-            elif centerX > center + 30:
-                angle -= 2
+            if centerX < center -40:
+                angle += 3
+            elif centerX > center + 40:
+                angle -= 3
             if angle > 180:
                 angle = 180
             if angle < 0:

@@ -39,8 +39,8 @@ while True:
     #masking
     hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
 
-    lower = np.array([13,0,76])
-    upper = np.array([23,255,137])
+    lower = np.array([110,0,0])
+    upper = np.array([153,255,255])
     
     mask = cv2.inRange(hsv, lower, upper)
 
@@ -59,10 +59,10 @@ while True:
         cv2.rectangle(frame, (x,y), (x+w,y+h), (0,255,0) , thickness=4 )
         break
 
-    if centerX < center -30:
-        angle += 2
-    elif centerX > center + 30:
-        angle -= 2
+    if centerX < center -40:
+        angle += 3
+    elif centerX > center + 40:
+        angle -= 3
     if angle > 180:
         angle = 180
     if angle < 0:
