@@ -2,7 +2,7 @@ import cv2
 from os import system, name
 import numpy as np
  
-cap = cv2.VideoCapture(4)
+cap = cv2.VideoCapture(0)
 
 frameWidth = 640 
 frameHeight = 480

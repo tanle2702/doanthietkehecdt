@@ -9,7 +9,7 @@ from simple_pid import PID
 import RPi.GPIO as io
 
 #pid initialization
-pid = PID(0.25,1,2, setpoint=0)
+pid = PID(0.1,0,0, setpoint=0)
 
 #motor initialization
 in3 = 23
@@ -50,14 +50,14 @@ fps = FPS().start()
 
 while True:
     #read 
-    _, frame = cap.read()
+    _, frame = vs.read()
     #frame = frame[100:300, 50:250]
 
     #masking
     hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
 
-    lower = np.array([110,0,0])
-    upper = np.array([153,255,255])
+    lower = np.array([114,0,0])
+    upper = np.array([255,255,255])
     
     mask = cv2.inRange(hsv, lower, upper)
 
@@ -70,44 +70,44 @@ while True:
         (x,y,w,h) = cv2.boundingRect(contour)
         centerX = int((x+x+w)/2)
         centerY= int((y+y+h)/2)
-        delta = centerX - center
+        delta = center - centerX
         print(delta)
         cv2.circle(frame, (centerX, centerY), 3 ,(0,0,255), -1)
         cv2.rectangle(frame, (x,y), (x+w,y+h), (0,255,0) , thickness=4 )
         break
 
- 
-        #OUTPUT TO MOTOR
-        speed = pid(delta)
+
+    #OUTPUT TO MOTOR
+    speed = pid(delta)
+    
+    #constrain
+    if speed > 100:
+        speed = 100
+    if speed < -100:
+        speed = -100
+
+    #output
+    if delta < 0:
+        moveLeft(abs(speed))
+    if delta > 0:
+        moveRight(abs(speed))
+
         
-        #constrain
-        if speed > 100:
-            speed = 100
-        if speed < -100:
-            speed = -100
 
-        #output
-        if delta < 0:
-            moveLeft(abs(speed))
-        if delta > 0:
-            moveRight(abs(speed))
 
-            
 
- 
+    fps.update()
+    fps.stop()
 
-        fps.update()
-        fps.stop()
-
-        info = [
-            ('FPS: ', '{:.2f}'.format(fps.fps())),
-            ('Delta: ', '{}'.format(delta)),
-            ('Output: ', '{}'.format(speed)),
-                ]
-        for (i, (k,v)) in enumerate(info):
-            text = '{}: {}'.format(k,v)
-            cv2.putText(frame, text, (10, H-((i*20)+20)), cv2.FONT_HERSHEY_SIMPLEX, 0.6, (0,0,255), 2)
-        
+    info = [
+        ('FPS: ', '{:.2f}'.format(fps.fps())),
+        ('Delta: ', '{}'.format(delta)),
+        ('Speed: ', '{}'.format(speed)),
+            ]
+    for (i, (k,v)) in enumerate(info):
+        text = '{}: {}'.format(k,v)
+        cv2.putText(frame, text, (10, height-((i*20)+20)), cv2.FONT_HERSHEY_SIMPLEX, 0.6, (0,0,255), 2)
+    
        
     cv2.imshow('Frame', frame)
     key = cv2.waitKey(1) & 0xFF
