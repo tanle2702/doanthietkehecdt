@@ -36,18 +36,6 @@ def moveRight(speed):
     pwm.ChangeDutyCycle(speed)
 
 
-OPENCV_OBJECT_TRACKERS = { #pip3 install opencv-contrib-python
-    'csrt': cv2.TrackerCSRT_create,
-    'kcf': cv2.TrackerKCF_create,
-    # 'boosting': cv2.TrackerBoosting_create,
-    'mil': cv2.TrackerMIL_create,
-    # 'tld': cv2.TrackerTLD_create,
-    # 'medianflow': cv2.TrackerMedianFlow_create,
-    # 'mosse': cv2.TrackerMOSSE_create
-        }
-initBB = None
-
-tracker =  OPENCV_OBJECT_TRACKERS['csrt']()
 
 vs = cv2.VideoCapture(0)
 
@@ -58,41 +46,51 @@ center = int(width/2)
 print('h: {}, w: {}, center: {}'.format(height, width, center))
 
 
-fps = None
+fps = FPS().start()
 
 while True:
-    _, frame = vs.read()
-    if frame is None:
-       break
+    #read 
+    _, frame = cap.read()
+    #frame = frame[100:300, 50:250]
 
-    (H,W) = frame.shape[:2]
+    #masking
+    hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
+
+    lower = np.array([110,0,0])
+    upper = np.array([153,255,255])
     
-    if initBB is not None:
-        success, box = tracker.update(frame)
+    mask = cv2.inRange(hsv, lower, upper)
 
-        if success:
-            (x,y,w,h) = [int(v) for v in box]
-            centerX = int(x+w/2)
-            centerY = int(y+h/2)
-            delta = int(center - centerX)
-            print('cX: {}, cY: {}, delta: {}'.format(centerX,centerY, delta))
-            cv2.rectangle(frame, (x,y), (x+w, y+h), (0,255,0),3)
-            cv2.circle(frame, (centerX, centerY), 5, (0,0,255), -1)
+    #find contours
+    contours = cv2.findContours(mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+    contours = imutils.grab_contours(contours)
+    contours = sorted(contours, key=cv2.contourArea, reverse=True)
 
-            #OUTPUT TO MOTOR
-            speed = pid(delta)
-            
-            #constrain
-            if speed > 100:
-                speed = 100
-            if speed < -100:
-                speed = -100
+    for contour in contours:
+        (x,y,w,h) = cv2.boundingRect(contour)
+        centerX = int((x+x+w)/2)
+        centerY= int((y+y+h)/2)
+        delta = centerX - center
+        print(delta)
+        cv2.circle(frame, (centerX, centerY), 3 ,(0,0,255), -1)
+        cv2.rectangle(frame, (x,y), (x+w,y+h), (0,255,0) , thickness=4 )
+        break
 
-            #output
-            if delta < 0:
-                moveLeft(abs(speed))
-            if delta > 0:
-                moveRight(abs(speed))
+ 
+        #OUTPUT TO MOTOR
+        speed = pid(delta)
+        
+        #constrain
+        if speed > 100:
+            speed = 100
+        if speed < -100:
+            speed = -100
+
+        #output
+        if delta < 0:
+            moveLeft(abs(speed))
+        if delta > 0:
+            moveRight(abs(speed))
 
             
 
@@ -102,12 +100,9 @@ while True:
         fps.stop()
 
         info = [
-            ('Tracker: ', 'csrt'),
-            ('Success: ', 'Yes' if success else 'No'),
             ('FPS: ', '{:.2f}'.format(fps.fps())),
             ('Delta: ', '{}'.format(delta)),
             ('Output: ', '{}'.format(speed)),
-
                 ]
         for (i, (k,v)) in enumerate(info):
             text = '{}: {}'.format(k,v)
@@ -116,11 +111,6 @@ while True:
        
     cv2.imshow('Frame', frame)
     key = cv2.waitKey(1) & 0xFF
-
-    if key == ord('s'):
-        initBB = cv2.selectROI("Frame", frame)
-        tracker.init(frame, initBB)
-        fps = FPS().start()
 
     if key == ord('q'):
         break
