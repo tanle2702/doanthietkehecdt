@@ -6,30 +6,34 @@ from time import sleep
 import numpy as np
 import cv2
 from simple_pid import PID
-# import RPi.GPIO as io
+import RPi.GPIO as io
 
 #pid initialization
-pid = PID(1,0.1,0.1, setpoint=1)
+pid = PID(0.25,1,2, setpoint=0)
 
 #motor initialization
-in1 = 
-in2 = 
-enA = 
+in3 = 23
+in4 = 24
+enB = 22
 
 io.setmode(io.BCM)
-io.setup(in1, io.out)
-io.setup(in2, io.out)
-io.setup(enA, io.out)
+io.setup(in3, io.OUT)
+io.setup(in4, io.OUT)
+io.setup(enB, io.OUT)
 
-def moveLeft(pwm):
-    io.output(in1, io.HIGH)
-    io.output(in2, io.LOW)
-    io.output(enA, pwm)
+pwm = io.PWM(enB, 100)
+pwm.start(0)
 
-def moveRight(pwm):
-    io.output(in1, io.LOW)
-    io.output(in2, io.HIGH)
-    io.output(enA, pwm)
+
+def moveLeft(speed):
+    io.output(in3, io.HIGH)
+    io.output(in4, io.LOW)
+    pwm.ChangeDutyCycle(speed)
+
+def moveRight(speed):
+    io.output(in3, io.LOW)
+    io.output(in4, io.HIGH)
+    pwm.ChangeDutyCycle(speed)
 
 
 OPENCV_OBJECT_TRACKERS = { #pip3 install opencv-contrib-python
@@ -76,18 +80,19 @@ while True:
             cv2.circle(frame, (centerX, centerY), 5, (0,0,255), -1)
 
             #OUTPUT TO MOTOR
-            pwm = pid(delta)
+            speed = pid(delta)
             
             #constrain
-            if pwm > 255:
-                pwm = 255
-            if pwm < 0:
-                pwm = 0
+            if speed > 100:
+                speed = 100
+            if speed < -100:
+                speed = -100
+
             #output
-            if pwm < 0:
-                moveLeft(abs(pwm))
-            if pwm > 0:
-                moveRight(abs(pwm))
+            if delta < 0:
+                moveLeft(abs(speed))
+            if delta > 0:
+                moveRight(abs(speed))
 
             
 
@@ -100,8 +105,8 @@ while True:
             ('Tracker: ', 'csrt'),
             ('Success: ', 'Yes' if success else 'No'),
             ('FPS: ', '{:.2f}'.format(fps.fps())),
-            ('Delta: ', '{}'.format(center-centerX)),
-            ('Output: ', '{}'.format(pwm)),
+            ('Delta: ', '{}'.format(delta)),
+            ('Output: ', '{}'.format(speed)),
 
                 ]
         for (i, (k,v)) in enumerate(info):
