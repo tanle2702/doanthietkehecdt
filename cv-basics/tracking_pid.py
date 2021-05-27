@@ -9,7 +9,7 @@ from simple_pid import PID
 import RPi.GPIO as io
 
 #pid initialization
-pid = PID(0.1,0,0, setpoint=0)
+pid = PID(4,0,0.5, setpoint=0)
 
 #motor initialization
 in3 = 23
@@ -78,7 +78,7 @@ while True:
 
 
     #OUTPUT TO MOTOR
-    speed = pid(delta)
+    speed = pid(delta/100)
     
     #constrain
     if speed > 100:
