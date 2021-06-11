@@ -36,7 +36,7 @@ def saveLog():
     print('Total images: ', len(imgList))
 
 if __name__ == '__main__':
-    cap = cv2.VideoCapture(4)
+    cap = cv2.VideoCapture(0)
     for x in range(10):
         _, img = cap.read()
         saveData(img, 0.1)
