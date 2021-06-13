@@ -20,12 +20,12 @@ class Motor():
         # speed trong khoang [-1,1]
         # duoi 1 quay phai, nguoc lai quay trai
         if speed < 0:
-            GPIO.output(self.in1, GPIO.HIGH)
-            GPIO.output(self.in2, GPIO.LOW)
-            self.pwm.ChangeDutyCycle(abs(speed * 100))
-        else:
             GPIO.output(self.in1, GPIO.LOW)
             GPIO.output(self.in2, GPIO.HIGH)
+            self.pwm.ChangeDutyCycle(abs(speed * 100))
+        else:
+            GPIO.output(self.in1, GPIO.HIGH)
+            GPIO.output(self.in2, GPIO.LOW)
             self.pwm.ChangeDutyCycle(speed * 100)
 
 
@@ -35,4 +35,5 @@ if __name__ == '__main__':
         controllerValue = jM.getCurrentJSValue(name='axis1')
         motor.spin(controllerValue)
         print(controllerValue)
+
 

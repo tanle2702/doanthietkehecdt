@@ -18,6 +18,9 @@ while os.path.exists(os.path.join(myDir, f'IMG{str(countFolder)}')):
 newPath = myDir + '/IMG'+str(countFolder)
 os.makedirs(newPath)
 
+print('Created folder ', newPath)
+
+
 def saveData(img, pwm):
     global imgList, pwmList
     now = datetime.now()

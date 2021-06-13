@@ -11,5 +11,5 @@ def getImg(display=False, width=480):
 
 if __name__ == '__main__':
     while True:
-        img = getImg(True)
+        img = getImg(True,240)
         cv2.waitKey(1)

@@ -135,3 +135,9 @@ dmypy.json
 #video file
 *.h264
 *.avi
+
+#images file
+*.jpg
+*.png
+#log files
+*.csv
