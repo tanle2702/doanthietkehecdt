@@ -31,7 +31,7 @@ def importDataInfo(path):
         print(f'{x}: {dataNew.shape[0]} ', end='')
         #### remove file path and get only file name
         dataNew['Center'] = dataNew['Center'].apply(getName)
-        data = data.append(dataNew, True)
+        data = data.append(dataNew, ignore_index=True)
     print('  ')
     print('Total images imported ', data.shape[0])
     return data
@@ -104,10 +104,9 @@ def augmentImage(imgPath, steering):
 
 ### preprocess
 def preProcess(img):
-    # img = img[54:120,:,:]
     img = cv2.cvtColor(img, cv2.COLOR_RGB2YUV)
     img = cv2.GaussianBlur(img, (3,3), 0)
-    img = cv2.resize(img, (200, 66))
+    # img = cv2.resize(img, (200, 66))
     img = img/255
     return img
 
@@ -115,7 +114,7 @@ def preProcess(img):
 def createModel():
     model = Sequential()
     #layers
-    model.add(Convolution2D(24, (5,5), (2,2), input_shape=(66, 200, 3), activation='elu'))
+    model.add(Convolution2D(24, (5,5), (2,2), input_shape=(180, 240, 3), activation='elu'))
     model.add(Convolution2D(36, (5,5), (2,2), activation='elu'))
     model.add(Convolution2D(48, (5,5), (2,2), activation='elu'))
     model.add(Convolution2D(64, (3,3), activation='elu'))
@@ -127,7 +126,7 @@ def createModel():
     model.add(Dense(10, activation='elu'))
     model.add(Dense(1))
 
-    model.compile(Adam(lr=0.0001, loss='mse'))
+    model.compile(Adam(lr=0.0001), loss='mse')
     return model
 
 ### training
